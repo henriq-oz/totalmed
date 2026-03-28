@@ -1,0 +1,11 @@
+Comandos de Instalação
+npm i
+npm install react-router-dom
+npm install json-server --save-dev
+
+
+Comandos de atualizar do GitHub
+git add .   → prepara as mudanças
+git commit -m "descrição das mudanças"  → salva no histórico
+git push    → envia para o GitHub
+git pull    → baixa atualizações
