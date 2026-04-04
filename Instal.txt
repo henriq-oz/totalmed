@@ -1,7 +1,14 @@
 Comandos de Instalação
-npm i
+npm run dev
+npm run server
+
+npm install
 npm install react-router-dom
 npm install json-server --save-dev
+npm install concurrently --save-dev
+
+npm uninstall json-server
+npm install json-server@0.17.4 --save-dev
 
 
 Comandos de atualizar do GitHub
@@ -9,3 +16,13 @@ git add .   → prepara as mudanças
 git commit -m "descrição das mudanças"  → salva no histórico
 git push    → envia para o GitHub
 git pull    → baixa atualizações
+
+
+# Ativar modo escuro para aplicativos e sistema no Windows 11
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name AppsUseLightTheme -Value 0
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name SystemUsesLightTheme -Value 0
+
+# Reiniciar o Explorer para aplicar imediatamente
+Stop-Process -Name explorer -Force
+Start-Process explorer
+

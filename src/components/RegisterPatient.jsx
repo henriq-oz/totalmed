@@ -174,7 +174,8 @@ export default function RegisterPatient({ onVoltarClick }) {
     setCarregando(true);
 
     try {
-      const response = await fetch('/api/autenticacao/registro/paciente', {
+      // const response = await fetch('/api/autenticacao/registro/paciente', {
+      const response = await fetch('/pacientes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -292,7 +293,6 @@ export default function RegisterPatient({ onVoltarClick }) {
                 <option value="">Selecione</option>
                 <option value="masculino">Masculino</option>
                 <option value="feminino">Feminino</option>
-                <option value="outro">Outro</option>
               </select>
               {erros.sexo && <span className="erro-texto">{erros.sexo}</span>}
             </div>

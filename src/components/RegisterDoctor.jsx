@@ -172,7 +172,8 @@ export default function RegisterDoctor({ onVoltarClick }) {
     setCarregando(true);
 
     try {
-      const response = await fetch('/api/autenticacao/registro/medico', {
+      // const response = await fetch('/api/autenticacao/registro/medico', {
+      const response = await fetch('/medicos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

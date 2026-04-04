@@ -82,22 +82,14 @@
   outline-offset: 2px;
 }
 
-.type-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 85px;           /* círculo um pouco maior (fica mais bonito) */
-  height: 85px;
-  margin: 0 auto 24px;
-  background: #50b46c;
-  border-radius: 50%;
-}
 
 .type-icon img {
-  width: 100%;             /* tamanho ideal para ficar centralizado e com margem bonita */
-  height: 100%;
+  width: 30%;             
+  height: 30%;
   object-fit: contain;
   object-position: center;
+  margin: 0 auto 5px;
+  
 }
 
 @keyframes scaleIn {
@@ -163,8 +155,5 @@
     padding: 25px;
   }
 
-  .type-icon {
-    width: 120px;    /* ← Círculo menor no celular */
-    height: 120px;
-  }
+
 }

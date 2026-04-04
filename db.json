@@ -1,0 +1,27 @@
+{
+  "medicos": [
+    {
+      "nomeCompleto": "João Henriqu",
+      "cpf": "46990653841",
+      "crm": "123458",
+      "especialidade": "Outra",
+      "email": "joao@gmail.com",
+      "telefone": "11947182193",
+      "senha": "12345678Jh",
+      "id": 1
+    }
+  ],
+  "pacientes": [
+    {
+      "nomeCompleto": "João Henrique de Oliveira Ferrarez",
+      "cpf": "46990653841",
+      "dataNascimento": "04/09/2007",
+      "sexo": "masculino",
+      "endereco": "Travessa Niterói 141, Jardim Maria Helena, casa 2b, SP",
+      "email": "joao@gmail.com",
+      "telefone": "11947182193",
+      "senha": "12345678Jh",
+      "id": 1
+    }
+  ]
+}
