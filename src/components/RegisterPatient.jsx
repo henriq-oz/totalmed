@@ -192,20 +192,20 @@ export default function RegisterPatient({ onVoltarClick }) {
         })
       });
 
-if (response.ok) {
-  const dadosPaciente = {
-    nomeCompleto: formData.nomeCompleto,
-    cpf: formData.cpf.replace(/\D/g, ''),
-    dataNascimento: formData.dataNascimento,
-    sexo: formData.sexo,
-    endereco: formData.endereco,
-    email: formData.email,
-    telefone: formData.telefone.replace(/\D/g, ''),
-    senha: formData.senha
-  };
-  
-  navigate('/ficha-saude', { state: { patientData: dadosPaciente } });
-} else {
+      if (response.ok) {
+        const dadosPaciente = {
+          nomeCompleto: formData.nomeCompleto,
+          cpf: formData.cpf.replace(/\D/g, ''),
+          dataNascimento: formData.dataNascimento,
+          sexo: formData.sexo,
+          endereco: formData.endereco,
+          email: formData.email,
+          telefone: formData.telefone.replace(/\D/g, ''),
+          senha: formData.senha
+        };
+
+        navigate('/ficha-saude', { state: { patientData: dadosPaciente } });
+      } else {
         const erro = await response.json();
         setErros({
           geral: erro.mensagem || 'Erro ao criar conta'
