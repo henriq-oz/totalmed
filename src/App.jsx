@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import HealthForm from './pages/HealthForm'
 import './App.css'
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/criar-conta" element={<Register />} />
+        <Route path="/ficha-saude" element={<HealthForm />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
         {/* Suas outras rotas aqui */}
       </Routes>

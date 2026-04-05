@@ -67,9 +67,9 @@ export default function RegisterPatient({ onVoltarClick }) {
 
   const validarCPF = (cpf) => {
     const cpfLimpo = cpf.replace(/\D/g, '');
-    
+
     if (cpfLimpo.length !== 11) return false;
-    
+
     // Verifica se todos os dígitos são iguais
     if (/^(\d)\1{10}$/.test(cpfLimpo)) return false;
 
@@ -120,7 +120,7 @@ export default function RegisterPatient({ onVoltarClick }) {
       const dataNasc = new Date(ano, mes - 1, dia);
       const hoje = new Date();
       const idade = hoje.getFullYear() - dataNasc.getFullYear();
-      
+
       if (idade < 18) {
         novosErros.dataNascimento = 'Você deve ter pelo menos 18 anos';
       }
@@ -192,10 +192,20 @@ export default function RegisterPatient({ onVoltarClick }) {
         })
       });
 
-      if (response.ok) {
-        // Redirecionar para página de sucesso ou login
-        navigate('/registro-sucesso?tipo=paciente');
-      } else {
+if (response.ok) {
+  const dadosPaciente = {
+    nomeCompleto: formData.nomeCompleto,
+    cpf: formData.cpf.replace(/\D/g, ''),
+    dataNascimento: formData.dataNascimento,
+    sexo: formData.sexo,
+    endereco: formData.endereco,
+    email: formData.email,
+    telefone: formData.telefone.replace(/\D/g, ''),
+    senha: formData.senha
+  };
+  
+  navigate('/ficha-saude', { state: { patientData: dadosPaciente } });
+} else {
         const erro = await response.json();
         setErros({
           geral: erro.mensagem || 'Erro ao criar conta'
