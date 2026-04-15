@@ -3,8 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import RegisterPatient from '../components/RegisterPatient';
 import RegisterDoctor from '../components/RegisterDoctor';
 import Logo from '../components/Logo';
-import iconDoctor from '../assets/iconMedico.png';
-import iconPatient from '../assets/iconPaciente.png';
+import iconDoctor from '../assets/stethoscope.png';
+import iconPatient from '../assets/person.png';
 import '../styles/Register.css';
 
 export default function Register() {

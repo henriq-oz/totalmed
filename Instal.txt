@@ -4,6 +4,7 @@ npm run server
 
 npm install
 npm install react-router-dom
+npm install -g npm@11.12.1
 npm install json-server --save-dev
 npm install concurrently --save-dev
 
@@ -12,6 +13,10 @@ npm install json-server@0.17.4 --save-dev
 
 
 Comandos de atualizar do GitHub
+git remote add origin https://github.com/henriq-oz/totalmed
+git init
+git status
+
 git add .   → prepara as mudanças
 git commit -m "descrição das mudanças"  → salva no histórico
 git push    → envia para o GitHub
@@ -25,4 +30,3 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\P
 # Reiniciar o Explorer para aplicar imediatamente
 Stop-Process -Name explorer -Force
 Start-Process explorer
-
