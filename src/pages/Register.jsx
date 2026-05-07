@@ -2,9 +2,13 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import RegisterPatient from '../components/RegisterPatient';
 import RegisterDoctor from '../components/RegisterDoctor';
+import RegisterAdmin from '../components/RegisterAdmin';
+
 import Logo from '../components/Logo';
-import iconDoctor from '../assets/stethoscope.png';
 import iconPatient from '../assets/person.png';
+import iconAdmin from '../assets/security.png';
+import iconDoctor from '../assets/stethoscope.png';
+
 import '../styles/Register.css';
 
 export default function Register() {
@@ -19,6 +23,10 @@ export default function Register() {
     return <RegisterDoctor onVoltarClick={() => setTipoSelecionado(null)} />;
   }
 
+  if (tipoSelecionado === 'admin') {
+    return <RegisterAdmin onVoltarClick={() => setTipoSelecionado(null)} />;
+  }
+
   return (
     <div className="register-container">
       <div className="register-card">
@@ -29,6 +37,7 @@ export default function Register() {
         </div>
 
         <div className="type-selection">
+
           {/* Card Paciente */}
           <div
             className="type-card"
@@ -40,6 +49,7 @@ export default function Register() {
             <div className="type-icon">
               <img src={iconPatient} alt="Ícone Paciente" />
             </div>
+
             <h2>Paciente</h2>
             <p>Crie uma conta como paciente para realizar triagens, solicitar atendimentos e acompanhar seu histórico médico.</p>
           </div>
@@ -54,9 +64,24 @@ export default function Register() {
           >
             <div className="type-icon">
               <img src={iconDoctor} alt="Ícone Médico" />
-            </div>
+            </div> 
             <h2>Médico</h2>
             <p>Crie uma conta como médico para atender pacientes, registrar diagnósticos e prescrever receitas digitais.</p>
+          </div>
+
+          {/* Card Administrador */}
+          <div
+            className="type-card"
+            onClick={() => setTipoSelecionado('admin')}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => e.key === 'Enter' && setTipoSelecionado('admin')}
+          >
+            <div className="type-icon">
+              <img src={iconAdmin} alt="Ícone Admin" />
+            </div> 
+            <h2>Administrador</h2>
+            <p>Crie uma conta como administrador para gerenciar o sistema, visualizar relatórios e monitorar KPIs.</p>
           </div>
         </div>
 

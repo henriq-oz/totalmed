@@ -6,7 +6,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/pacientes': 'http://localhost:3001',
-      '/medicos': 'http://localhost:3001'
+      '/medicos': 'http://localhost:3001',
+      '/administradores': 'http://localhost:3001'
     }
   }
 })

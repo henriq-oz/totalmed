@@ -49,99 +49,56 @@ export default function Login() {
     return Object.keys(novosErros).length === 0;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (!validarFormulario()) {
-  //     return;
-  //   }
-
-  //   setCarregando(true);
-
-  //   try {
-  //     const response = await fetch('/api/autenticacao/login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         emailOuUsuario: formData.emailOuUsuario,
-  //         senha: formData.senha,
-  //         tipoUsuario: formData.tipoUsuario
-  //       })
-  //     });
-
-  //     if (response.ok) {
-  //       const dados = await response.json();
-  //       localStorage.setItem('token', dados.token);
-  //       localStorage.setItem('usuario', JSON.stringify(dados.usuario));
-        
-  //       const rotas = {
-  //         'Paciente': '/paciente/dashboard',
-  //         'Médico': '/medico/dashboard',
-  //         'Administrador': '/admin/dashboard'
-  //       };
-        
-  //       window.location.href = rotas[formData.tipoUsuario];
-  //     } else {
-  //       setErros({
-  //         geral: 'Email/usuário ou senha incorretos'
-  //       });
-  //     }
-  //   } catch (erro) {
-  //     setErros({
-  //       geral: 'Erro ao conectar ao servidor. Tente novamente.'
-  //     });
-  //     console.error('Erro de login:', erro);
-  //   } finally {
-  //     setCarregando(false);
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validarFormulario()) return;
+    if (!validarFormulario()) return;
 
-  setCarregando(true);
+    setCarregando(true);
 
-  try {
-    let endpoint = formData.tipoUsuario === 'Médico' ? '/medicos' : '/pacientes';
-
-    const response = await fetch(endpoint);
-    const usuarios = await response.json();
-
-    const usuarioEncontrado = usuarios.find(u => 
-      (u.email === formData.emailOuUsuario || u.cpf === formData.emailOuUsuario) &&
-      u.senha === formData.senha
-    );
-
-    if (usuarioEncontrado) {
-      const dados = {
-        token: "fake-token-" + Date.now(),
-        usuario: usuarioEncontrado
-      };
+    try {
+      let endpoint = '/pacientes';
       
-      localStorage.setItem('token', dados.token);
-      localStorage.setItem('usuario', JSON.stringify(dados.usuario));
-      
-      const rotas = {
-        'Paciente': '/paciente/dashboard',
-        'Médico': '/medico/dashboard',
-        'Administrador': '/admin/dashboard'
-      };
-      
-      window.location.href = rotas[formData.tipoUsuario] || '/';
-    } else {
-      setErros({ geral: 'Email/usuário ou senha incorretos' });
+      if (formData.tipoUsuario === 'Médico') {
+        endpoint = '/medicos';
+      } else if (formData.tipoUsuario === 'Administrador') {
+        endpoint = '/administradores';
+      }
+
+      const response = await fetch(endpoint);
+      const usuarios = await response.json();
+
+      const usuarioEncontrado = usuarios.find(u => 
+        (u.email === formData.emailOuUsuario || u.cpf === formData.emailOuUsuario) &&
+        u.senha === formData.senha
+      );
+
+      if (usuarioEncontrado) {
+        const dados = {
+          token: "fake-token-" + Date.now(),
+          usuario: usuarioEncontrado
+        };
+        
+        localStorage.setItem('token', dados.token);
+        localStorage.setItem('usuario', JSON.stringify(dados.usuario));
+        
+        const rotas = {
+          'Paciente': '/paciente/dashboard',
+          'Médico': '/medico/dashboard',
+          'Administrador': '/admin/dashboard'
+        };
+        
+        window.location.href = rotas[formData.tipoUsuario] || '/';
+      } else {
+        setErros({ geral: 'Email/usuário ou senha incorretos' });
+      }
+    } catch (erro) {
+      setErros({ geral: 'Erro ao conectar ao servidor' });
+      console.error('Erro:', erro);
+    } finally {
+      setCarregando(false);
     }
-  } catch (erro) {
-    setErros({ geral: 'Erro ao conectar ao servidor' });
-    console.error('Erro:', erro);
-  } finally {
-    setCarregando(false);
-  }
-};
+  };
 
   return (
     <div className="login-container">
@@ -194,7 +151,7 @@ export default function Login() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="tipoUsuario">Tipo de usuário</label>
+            <label htmlFor="tipoUsuario">Usuário</label>
             <select
               id="tipoUsuario"
               name="tipoUsuario"
