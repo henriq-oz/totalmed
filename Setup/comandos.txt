@@ -1,0 +1,19 @@
+Comandos de Instalação e npm
+npm run dev
+npm run server
+
+npm install
+npm install react-router-dom
+npm install json-server --save-dev
+npm install concurrently --save-dev
+
+Comandos de atualizar do GitHub
+git remote add origin https://github.com/henriq-oz/totalmed
+git init
+git status
+
+git add .   → prepara as mudanças
+git commit -m "descrição das mudanças"  → salva no histórico
+git push    → envia para o GitHub
+git pull    → baixa atualizações
+

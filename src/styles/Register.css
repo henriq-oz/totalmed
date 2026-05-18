@@ -68,7 +68,9 @@
   cursor: pointer;
   transition: all 0.3s ease;
   background: #f9f9f9;
+
 }
+
 
 .type-card:hover {
   border-color: #27ae60;
