@@ -6,30 +6,24 @@ import '../styles/RegisterForms.css';
 export default function RegisterAdmin({ onVoltarClick }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nomeCompleto: '',
+    nome: '',
     cpf: '',
-    idFuncionario: '',
-    departamento: '',
+    rg: '',
     email: '',
-    telefone: '',
-    senha: '',
-    confirmarSenha: ''
+    password: '',
+    confirmarPassword: '',
+    dataNascimento: '',
+    sexo: '',
+    nivelAcesso: ''
   });
 
   const [erros, setErros] = useState({});
   const [carregando, setCarregando] = useState(false);
 
-  const departamentos = [
-    'Administração',
-    'Financeiro',
-    'Recursos Humanos',
-    'Tecnologia da Informação',
-    'Qualidade',
-    'Segurança',
-    'Auditoria',
-    'Diretoria',
-    'Outro setor'
-
+  const nivelAcessoOptions = [
+    'SUPER_ADMIN',
+    'ADMIN',
+    'GERENCIADOR'
   ];
 
   const handleChange = (e) => {
@@ -46,21 +40,20 @@ export default function RegisterAdmin({ onVoltarClick }) {
         .substring(0, 14);
     }
 
-    // Formatar ID de Funcionário
-    if (name === 'idFuncionario') {
-      valorFormatado = value
-        .toUpperCase()
-        .replace(/[^A-Z0-9-]/g, '')
-        .substring(0, 10);
-    }
-
-    // Formatar Telefone
-    if (name === 'telefone') {
+    // Formatar RG
+    if (name === 'rg') {
       valorFormatado = value
         .replace(/\D/g, '')
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{5})(\d)/, '$1-$2')
-        .substring(0, 15);
+        .substring(0, 11);
+    }
+
+    // Formatar Data
+    if (name === 'dataNascimento') {
+      valorFormatado = value
+        .replace(/\D/g, '')
+        .replace(/(\d{2})(\d)/, '$1/$2')
+        .replace(/(\d{2})(\d)/, '$1/$2')
+        .substring(0, 10);
     }
 
     setFormData(prev => ({
@@ -106,10 +99,10 @@ export default function RegisterAdmin({ onVoltarClick }) {
   const validarFormulario = () => {
     const novosErros = {};
 
-    if (!formData.nomeCompleto.trim()) {
-      novosErros.nomeCompleto = 'Nome completo é obrigatório';
-    } else if (formData.nomeCompleto.trim().split(' ').length < 2) {
-      novosErros.nomeCompleto = 'Digite seu nome completo';
+    if (!formData.nome.trim()) {
+      novosErros.nome = 'Nome completo é obrigatório';
+    } else if (formData.nome.trim().split(' ').length < 2) {
+      novosErros.nome = 'Digite seu nome completo';
     }
 
     if (!formData.cpf.trim()) {
@@ -118,14 +111,27 @@ export default function RegisterAdmin({ onVoltarClick }) {
       novosErros.cpf = 'CPF inválido';
     }
 
-    if (!formData.idFuncionario.trim()) {
-      novosErros.idFuncionario = 'ID de Funcionário é obrigatório';
-    } else if (formData.idFuncionario.length < 5) {
-      novosErros.idFuncionario = 'ID de Funcionário inválido';
+    if (!formData.rg.trim()) {
+      novosErros.rg = 'RG é obrigatório';
+    } else if (formData.rg.length < 8) {
+      novosErros.rg = 'RG inválido';
     }
 
-    if (!formData.departamento) {
-      novosErros.departamento = 'Departamento é obrigatório';
+    if (!formData.dataNascimento) {
+      novosErros.dataNascimento = 'Data de nascimento é obrigatória';
+    } else {
+      const [dia, mes, ano] = formData.dataNascimento.split('/');
+      const dataNasc = new Date(ano, mes - 1, dia);
+      const hoje = new Date();
+      const idade = hoje.getFullYear() - dataNasc.getFullYear();
+
+      if (idade < 18) {
+        novosErros.dataNascimento = 'Você deve ter pelo menos 18 anos';
+      }
+    }
+
+    if (!formData.sexo) {
+      novosErros.sexo = 'Sexo é obrigatório';
     }
 
     if (!formData.email.trim()) {
@@ -134,28 +140,31 @@ export default function RegisterAdmin({ onVoltarClick }) {
       novosErros.email = 'Email inválido';
     }
 
-    if (!formData.telefone.trim()) {
-      novosErros.telefone = 'Telefone é obrigatório';
-    } else if (formData.telefone.replace(/\D/g, '').length !== 11) {
-      novosErros.telefone = 'Telefone inválido';
+    if (!formData.nivelAcesso) {
+      novosErros.nivelAcesso = 'Nível de acesso é obrigatório';
     }
 
-    if (!formData.senha.trim()) {
-      novosErros.senha = 'Senha é obrigatória';
-    } else if (formData.senha.length < 8) {
-      novosErros.senha = 'Senha deve ter no mínimo 8 caracteres';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.senha)) {
-      novosErros.senha = 'Senha deve conter maiúsculas, minúsculas e números';
+    if (!formData.password.trim()) {
+      novosErros.password = 'Senha é obrigatória';
+    } else if (formData.password.length < 8) {
+      novosErros.password = 'Senha deve ter no mínimo 8 caracteres';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      novosErros.password = 'Senha deve conter maiúsculas, minúsculas e números';
     }
 
-    if (!formData.confirmarSenha.trim()) {
-      novosErros.confirmarSenha = 'Confirme sua senha';
-    } else if (formData.senha !== formData.confirmarSenha) {
-      novosErros.confirmarSenha = 'As senhas não coincidem';
+    if (!formData.confirmarPassword.trim()) {
+      novosErros.confirmarPassword = 'Confirme sua senha';
+    } else if (formData.password !== formData.confirmarPassword) {
+      novosErros.confirmarPassword = 'As senhas não coincidem';
     }
 
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
+  };
+
+  const converterDataParaISO = (dataBR) => {
+    const [dia, mes, ano] = dataBR.split('/');
+    return `${ano}-${mes}-${dia}`;
   };
 
   const handleSubmit = async (e) => {
@@ -168,19 +177,22 @@ export default function RegisterAdmin({ onVoltarClick }) {
     setCarregando(true);
 
     try {
-      const response = await fetch('/administradores', {
+      const dataNascimentoISO = converterDataParaISO(formData.dataNascimento);
+
+      const response = await fetch('http://localhost:8080/admin/cadastro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nomeCompleto: formData.nomeCompleto,
-          cpf: formData.cpf.replace(/\D/g, ''),
-          idFuncionario: formData.idFuncionario,
-          departamento: formData.departamento,
+          nome: formData.nome,
           email: formData.email,
-          telefone: formData.telefone.replace(/\D/g, ''),
-          senha: formData.senha
+          cpf: formData.cpf.replace(/\D/g, ''),
+          rg: formData.rg.replace(/\D/g, ''),
+          password: formData.password,
+          dataNascimento: dataNascimentoISO,
+          sexo: formData.sexo,
+          nivelAcesso: formData.nivelAcesso
         })
       });
 
@@ -221,18 +233,18 @@ export default function RegisterAdmin({ onVoltarClick }) {
 
           <div className="form-row">
             <div className="form-group full-width">
-              <label htmlFor="nomeCompleto">Nome completo *</label>
+              <label htmlFor="nome">Nome completo *</label>
               <input
                 type="text"
-                id="nomeCompleto"
-                name="nomeCompleto"
-                value={formData.nomeCompleto}
+                id="nome"
+                name="nome"
+                value={formData.nome}
                 onChange={handleChange}
                 placeholder="Digite seu nome completo"
                 disabled={carregando}
-                className={erros.nomeCompleto ? 'input-erro' : ''}
+                className={erros.nome ? 'input-erro' : ''}
               />
-              {erros.nomeCompleto && <span className="erro-texto">{erros.nomeCompleto}</span>}
+              {erros.nome && <span className="erro-texto">{erros.nome}</span>}
             </div>
           </div>
 
@@ -254,44 +266,77 @@ export default function RegisterAdmin({ onVoltarClick }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="idFuncionario">ID de Funcionário *</label>
+              <label htmlFor="rg">RG *</label>
               <input
                 type="text"
-                id="idFuncionario"
-                name="idFuncionario"
-                value={formData.idFuncionario}
+                id="rg"
+                name="rg"
+                value={formData.rg}
                 onChange={handleChange}
-                placeholder="ADM-12345"
+                placeholder="Seu RG"
                 disabled={carregando}
-                className={erros.idFuncionario ? 'input-erro' : ''}
+                className={erros.rg ? 'input-erro' : ''}
+                maxLength="11"
+              />
+              {erros.rg && <span className="erro-texto">{erros.rg}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="dataNascimento">Data de nascimento *</label>
+              <input
+                type="text"
+                id="dataNascimento"
+                name="dataNascimento"
+                value={formData.dataNascimento}
+                onChange={handleChange}
+                placeholder="dd/mm/aaaa"
+                disabled={carregando}
+                className={erros.dataNascimento ? 'input-erro' : ''}
                 maxLength="10"
               />
-              {erros.idFuncionario && <span className="erro-texto">{erros.idFuncionario}</span>}
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group full-width">
-              <label htmlFor="departamento">Departamento *</label>
-              <select
-                id="departamento"
-                name="departamento"
-                value={formData.departamento}
-                onChange={handleChange}
-                disabled={carregando}
-                className={erros.departamento ? 'input-erro' : ''}
-              >
-                <option value="">Selecione</option>
-                {departamentos.map(dept => (
-                  <option key={dept} value={dept}>{dept}</option>
-                ))}
-              </select>
-              {erros.departamento && <span className="erro-texto">{erros.departamento}</span>}
+              {erros.dataNascimento && <span className="erro-texto">{erros.dataNascimento}</span>}
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
+              <label htmlFor="sexo">Sexo *</label>
+              <select
+                id="sexo"
+                name="sexo"
+                value={formData.sexo}
+                onChange={handleChange}
+                disabled={carregando}
+                className={erros.sexo ? 'input-erro' : ''}
+              >
+                <option value="">Selecione</option>
+                <option value="masculino">Masculino</option>
+                <option value="feminino">Feminino</option>
+              </select>
+              {erros.sexo && <span className="erro-texto">{erros.sexo}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="nivelAcesso">Nível de Acesso *</label>
+              <select
+                id="nivelAcesso"
+                name="nivelAcesso"
+                value={formData.nivelAcesso}
+                onChange={handleChange}
+                disabled={carregando}
+                className={erros.nivelAcesso ? 'input-erro' : ''}
+              >
+                <option value="">Selecione</option>
+                {nivelAcessoOptions.map(nivel => (
+                  <option key={nivel} value={nivel}>{nivel}</option>
+                ))}
+              </select>
+              {erros.nivelAcesso && <span className="erro-texto">{erros.nivelAcesso}</span>}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group full-width">
               <label htmlFor="email">Email *</label>
               <input
                 type="email"
@@ -305,56 +350,40 @@ export default function RegisterAdmin({ onVoltarClick }) {
               />
               {erros.email && <span className="erro-texto">{erros.email}</span>}
             </div>
-
-            <div className="form-group">
-              <label htmlFor="telefone">Telefone *</label>
-              <input
-                type="tel"
-                id="telefone"
-                name="telefone"
-                value={formData.telefone}
-                onChange={handleChange}
-                placeholder="(00) 00000-0000"
-                disabled={carregando}
-                className={erros.telefone ? 'input-erro' : ''}
-                maxLength="15"
-              />
-              {erros.telefone && <span className="erro-texto">{erros.telefone}</span>}
-            </div>
           </div>
 
           <div className="form-row">
             <div className="form-group full-width">
-              <label htmlFor="senha">Senha *</label>
+              <label htmlFor="password">Senha *</label>
               <input
                 type="password"
-                id="senha"
-                name="senha"
-                value={formData.senha}
+                id="password"
+                name="password"
+                value={formData.password}
                 onChange={handleChange}
                 placeholder="Digite sua senha"
                 disabled={carregando}
-                className={erros.senha ? 'input-erro' : ''}
+                className={erros.password ? 'input-erro' : ''}
               />
-              {erros.senha && <span className="erro-texto">{erros.senha}</span>}
+              {erros.password && <span className="erro-texto">{erros.password}</span>}
               <p className="password-hint">Mínimo 8 caracteres, com maiúsculas, minúsculas e números</p>
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group full-width">
-              <label htmlFor="confirmarSenha">Confirmar Senha *</label>
+              <label htmlFor="confirmarPassword">Confirmar Senha *</label>
               <input
                 type="password"
-                id="confirmarSenha"
-                name="confirmarSenha"
-                value={formData.confirmarSenha}
+                id="confirmarPassword"
+                name="confirmarPassword"
+                value={formData.confirmarPassword}
                 onChange={handleChange}
                 placeholder="Confirme sua senha"
                 disabled={carregando}
-                className={erros.confirmarSenha ? 'input-erro' : ''}
+                className={erros.confirmarPassword ? 'input-erro' : ''}
               />
-              {erros.confirmarSenha && <span className="erro-texto">{erros.confirmarSenha}</span>}
+              {erros.confirmarPassword && <span className="erro-texto">{erros.confirmarPassword}</span>}
             </div>
           </div>
 

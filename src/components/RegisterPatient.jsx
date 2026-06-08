@@ -6,15 +6,15 @@ import '../styles/RegisterForms.css';
 export default function RegisterPatient({ onVoltarClick }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nomeCompleto: '',
+    nome: '',
     cpf: '',
+    rg: '',
     dataNascimento: '',
     sexo: '',
-    endereco: '',
     email: '',
-    telefone: '',
-    senha: '',
-    confirmarSenha: ''
+    password: '',
+    confirmarPassword: '',
+    endereco: ''
   });
 
   const [erros, setErros] = useState({});
@@ -34,13 +34,11 @@ export default function RegisterPatient({ onVoltarClick }) {
         .substring(0, 14);
     }
 
-    // Formatar Telefone
-    if (name === 'telefone') {
+    // Formatar RG
+    if (name === 'rg') {
       valorFormatado = value
         .replace(/\D/g, '')
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{5})(\d)/, '$1-$2')
-        .substring(0, 15);
+        .substring(0, 11);
     }
 
     // Formatar Data
@@ -70,13 +68,11 @@ export default function RegisterPatient({ onVoltarClick }) {
 
     if (cpfLimpo.length !== 11) return false;
 
-    // Verifica se todos os dígitos são iguais
     if (/^(\d)\1{10}$/.test(cpfLimpo)) return false;
 
     let soma = 0;
     let resto;
 
-    // Validar primeiro dígito
     for (let i = 1; i <= 9; i++) {
       soma += parseInt(cpfLimpo.substring(i - 1, i)) * (11 - i);
     }
@@ -85,7 +81,6 @@ export default function RegisterPatient({ onVoltarClick }) {
     if (resto === 10 || resto === 11) resto = 0;
     if (resto !== parseInt(cpfLimpo.substring(9, 10))) return false;
 
-    // Validar segundo dígito
     soma = 0;
     for (let i = 1; i <= 10; i++) {
       soma += parseInt(cpfLimpo.substring(i - 1, i)) * (12 - i);
@@ -101,16 +96,22 @@ export default function RegisterPatient({ onVoltarClick }) {
   const validarFormulario = () => {
     const novosErros = {};
 
-    if (!formData.nomeCompleto.trim()) {
-      novosErros.nomeCompleto = 'Nome completo é obrigatório';
-    } else if (formData.nomeCompleto.trim().split(' ').length < 2) {
-      novosErros.nomeCompleto = 'Digite seu nome completo';
+    if (!formData.nome.trim()) {
+      novosErros.nome = 'Nome completo é obrigatório';
+    } else if (formData.nome.trim().split(' ').length < 2) {
+      novosErros.nome = 'Digite seu nome completo';
     }
 
     if (!formData.cpf.trim()) {
       novosErros.cpf = 'CPF é obrigatório';
     } else if (!validarCPF(formData.cpf)) {
       novosErros.cpf = 'CPF inválido';
+    }
+
+    if (!formData.rg.trim()) {
+      novosErros.rg = 'RG é obrigatório';
+    } else if (formData.rg.length < 8) {
+      novosErros.rg = 'RG inválido';
     }
 
     if (!formData.dataNascimento) {
@@ -130,38 +131,37 @@ export default function RegisterPatient({ onVoltarClick }) {
       novosErros.sexo = 'Sexo é obrigatório';
     }
 
-    if (!formData.endereco.trim()) {
-      novosErros.endereco = 'Endereço é obrigatório';
-    }
-
     if (!formData.email.trim()) {
       novosErros.email = 'Email é obrigatório';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       novosErros.email = 'Email inválido';
     }
 
-    if (!formData.telefone.trim()) {
-      novosErros.telefone = 'Telefone é obrigatório';
-    } else if (formData.telefone.replace(/\D/g, '').length !== 11) {
-      novosErros.telefone = 'Telefone inválido';
+    if (!formData.endereco.trim()) {
+      novosErros.endereco = 'Endereço é obrigatório';
     }
 
-    if (!formData.senha.trim()) {
-      novosErros.senha = 'Senha é obrigatória';
-    } else if (formData.senha.length < 8) {
-      novosErros.senha = 'Senha deve ter no mínimo 8 caracteres';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.senha)) {
-      novosErros.senha = 'Senha deve conter maiúsculas, minúsculas e números';
+    if (!formData.password.trim()) {
+      novosErros.password = 'Senha é obrigatória';
+    } else if (formData.password.length < 8) {
+      novosErros.password = 'Senha deve ter no mínimo 8 caracteres';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      novosErros.password = 'Senha deve conter maiúsculas, minúsculas e números';
     }
 
-    if (!formData.confirmarSenha.trim()) {
-      novosErros.confirmarSenha = 'Confirme sua senha';
-    } else if (formData.senha !== formData.confirmarSenha) {
-      novosErros.confirmarSenha = 'As senhas não coincidem';
+    if (!formData.confirmarPassword.trim()) {
+      novosErros.confirmarPassword = 'Confirme sua senha';
+    } else if (formData.password !== formData.confirmarPassword) {
+      novosErros.confirmarPassword = 'As senhas não coincidem';
     }
 
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
+  };
+
+  const converterDataParaISO = (dataBR) => {
+    const [dia, mes, ano] = dataBR.split('/');
+    return `${ano}-${mes}-${dia}`;
   };
 
   const handleSubmit = async (e) => {
@@ -174,34 +174,35 @@ export default function RegisterPatient({ onVoltarClick }) {
     setCarregando(true);
 
     try {
-      // const response = await fetch('/api/autenticacao/registro/paciente', {
-      const response = await fetch('/pacientes', {
+      const dataNascimentoISO = converterDataParaISO(formData.dataNascimento);
+      
+      const response = await fetch('http://localhost:8080/pacientes/cadastro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nomeCompleto: formData.nomeCompleto,
-          cpf: formData.cpf.replace(/\D/g, ''),
-          dataNascimento: formData.dataNascimento,
-          sexo: formData.sexo,
-          endereco: formData.endereco,
+          nome: formData.nome,
           email: formData.email,
-          telefone: formData.telefone.replace(/\D/g, ''),
-          senha: formData.senha
+          cpf: formData.cpf.replace(/\D/g, ''),
+          rg: formData.rg.replace(/\D/g, ''),
+          password: formData.password,
+          dataNascimento: dataNascimentoISO,
+          sexo: formData.sexo,
+          endereco: {
+            rua: formData.endereco
+          }
         })
       });
 
       if (response.ok) {
         const dadosPaciente = {
-          nomeCompleto: formData.nomeCompleto,
-          cpf: formData.cpf.replace(/\D/g, ''),
-          dataNascimento: formData.dataNascimento,
-          sexo: formData.sexo,
-          endereco: formData.endereco,
+          nome: formData.nome,
           email: formData.email,
-          telefone: formData.telefone.replace(/\D/g, ''),
-          senha: formData.senha
+          cpf: formData.cpf.replace(/\D/g, ''),
+          rg: formData.rg.replace(/\D/g, ''),
+          dataNascimento: dataNascimentoISO,
+          sexo: formData.sexo
         };
 
         navigate('/ficha-saude', { state: { patientData: dadosPaciente } });
@@ -240,18 +241,18 @@ export default function RegisterPatient({ onVoltarClick }) {
 
           <div className="form-row">
             <div className="form-group full-width">
-              <label htmlFor="nomeCompleto">Nome completo *</label>
+              <label htmlFor="nome">Nome completo *</label>
               <input
                 type="text"
-                id="nomeCompleto"
-                name="nomeCompleto"
-                value={formData.nomeCompleto}
+                id="nome"
+                name="nome"
+                value={formData.nome}
                 onChange={handleChange}
                 placeholder="Digite seu nome completo"
                 disabled={carregando}
-                className={erros.nomeCompleto ? 'input-erro' : ''}
+                className={erros.nome ? 'input-erro' : ''}
               />
-              {erros.nomeCompleto && <span className="erro-texto">{erros.nomeCompleto}</span>}
+              {erros.nome && <span className="erro-texto">{erros.nome}</span>}
             </div>
           </div>
 
@@ -270,6 +271,22 @@ export default function RegisterPatient({ onVoltarClick }) {
                 maxLength="14"
               />
               {erros.cpf && <span className="erro-texto">{erros.cpf}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="rg">RG *</label>
+              <input
+                type="text"
+                id="rg"
+                name="rg"
+                value={formData.rg}
+                onChange={handleChange}
+                placeholder="Seu RG"
+                disabled={carregando}
+                className={erros.rg ? 'input-erro' : ''}
+                maxLength="11"
+              />
+              {erros.rg && <span className="erro-texto">{erros.rg}</span>}
             </div>
 
             <div className="form-group">
@@ -326,7 +343,7 @@ export default function RegisterPatient({ onVoltarClick }) {
           </div>
 
           <div className="form-row">
-            <div className="form-group">
+            <div className="form-group full-width">
               <label htmlFor="email">Email *</label>
               <input
                 type="email"
@@ -340,56 +357,40 @@ export default function RegisterPatient({ onVoltarClick }) {
               />
               {erros.email && <span className="erro-texto">{erros.email}</span>}
             </div>
-
-            <div className="form-group">
-              <label htmlFor="telefone">Telefone *</label>
-              <input
-                type="tel"
-                id="telefone"
-                name="telefone"
-                value={formData.telefone}
-                onChange={handleChange}
-                placeholder="(00) 00000-0000"
-                disabled={carregando}
-                className={erros.telefone ? 'input-erro' : ''}
-                maxLength="15"
-              />
-              {erros.telefone && <span className="erro-texto">{erros.telefone}</span>}
-            </div>
           </div>
 
           <div className="form-row">
             <div className="form-group full-width">
-              <label htmlFor="senha">Senha *</label>
+              <label htmlFor="password">Senha *</label>
               <input
                 type="password"
-                id="senha"
-                name="senha"
-                value={formData.senha}
+                id="password"
+                name="password"
+                value={formData.password}
                 onChange={handleChange}
                 placeholder="Digite sua senha"
                 disabled={carregando}
-                className={erros.senha ? 'input-erro' : ''}
+                className={erros.password ? 'input-erro' : ''}
               />
-              {erros.senha && <span className="erro-texto">{erros.senha}</span>}
+              {erros.password && <span className="erro-texto">{erros.password}</span>}
               <p className="password-hint">Mínimo 8 caracteres, com maiúsculas, minúsculas e números</p>
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group full-width">
-              <label htmlFor="confirmarSenha">Confirmar Senha *</label>
+              <label htmlFor="confirmarPassword">Confirmar Senha *</label>
               <input
                 type="password"
-                id="confirmarSenha"
-                name="confirmarSenha"
-                value={formData.confirmarSenha}
+                id="confirmarPassword"
+                name="confirmarPassword"
+                value={formData.confirmarPassword}
                 onChange={handleChange}
                 placeholder="Confirme sua senha"
                 disabled={carregando}
-                className={erros.confirmarSenha ? 'input-erro' : ''}
+                className={erros.confirmarPassword ? 'input-erro' : ''}
               />
-              {erros.confirmarSenha && <span className="erro-texto">{erros.confirmarSenha}</span>}
+              {erros.confirmarPassword && <span className="erro-texto">{erros.confirmarPassword}</span>}
             </div>
           </div>
 

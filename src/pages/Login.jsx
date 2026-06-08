@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    emailOuUsuario: '',
-    senha: '',
+    email: '',
+    password: '',
     tipoUsuario: 'Paciente'
   });
 
@@ -33,16 +33,16 @@ export default function Login() {
   const validarFormulario = () => {
     const novosErros = {};
 
-    if (!formData.emailOuUsuario.trim()) {
-      novosErros.emailOuUsuario = 'Email ou usuário é obrigatório';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailOuUsuario) && formData.emailOuUsuario.length < 3) {
-      novosErros.emailOuUsuario = 'Email ou usuário inválido';
+    if (!formData.email.trim()) {
+      novosErros.email = 'Email é obrigatório';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      novosErros.email = 'Email inválido';
     }
 
-    if (!formData.senha.trim()) {
-      novosErros.senha = 'Senha é obrigatória';
-    } else if (formData.senha.length < 6) {
-      novosErros.senha = 'Senha deve ter no mínimo 6 caracteres';
+    if (!formData.password.trim()) {
+      novosErros.password = 'Senha é obrigatória';
+    } else if (formData.password.length < 6) {
+      novosErros.password = 'Senha deve ter no mínimo 6 caracteres';
     }
 
     setErros(novosErros);
@@ -57,30 +57,21 @@ export default function Login() {
     setCarregando(true);
 
     try {
-      let endpoint = '/pacientes';
-      
-      if (formData.tipoUsuario === 'Médico') {
-        endpoint = '/medicos';
-      } else if (formData.tipoUsuario === 'Administrador') {
-        endpoint = '/administradores';
-      }
+      const response = await fetch('http://localhost:8080/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
 
-      const response = await fetch(endpoint);
-      const usuarios = await response.json();
-
-      const usuarioEncontrado = usuarios.find(u => 
-        (u.email === formData.emailOuUsuario || u.cpf === formData.emailOuUsuario) &&
-        u.senha === formData.senha
-      );
-
-      if (usuarioEncontrado) {
-        const dados = {
-          token: "fake-token-" + Date.now(),
-          usuario: usuarioEncontrado
-        };
-        
-        localStorage.setItem('token', dados.token);
-        localStorage.setItem('usuario', JSON.stringify(dados.usuario));
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('usuario', JSON.stringify(data));
         
         const rotas = {
           'Paciente': '/paciente/dashboard',
@@ -90,7 +81,7 @@ export default function Login() {
         
         window.location.href = rotas[formData.tipoUsuario] || '/';
       } else {
-        setErros({ geral: 'Email/usuário ou senha incorretos' });
+        setErros({ geral: 'Email ou senha incorretos' });
       }
     } catch (erro) {
       setErros({ geral: 'Erro ao conectar ao servidor' });
@@ -117,36 +108,36 @@ export default function Login() {
           )}
 
           <div className="form-group">
-            <label htmlFor="emailOuUsuario">Email ou usuário</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="text"
-              id="emailOuUsuario"
-              name="emailOuUsuario"
-              value={formData.emailOuUsuario}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-              placeholder="Digite seu email ou usuário"
+              placeholder="Digite seu email"
               disabled={carregando}
-              className={erros.emailOuUsuario ? 'input-erro' : ''}
+              className={erros.email ? 'input-erro' : ''}
             />
-            {erros.emailOuUsuario && (
-              <span className="erro-texto">{erros.emailOuUsuario}</span>
+            {erros.email && (
+              <span className="erro-texto">{erros.email}</span>
             )}
           </div>
 
           <div className="form-group">
-            <label htmlFor="senha">Senha</label>
+            <label htmlFor="password">Senha</label>
             <input
               type="password"
-              id="senha"
-              name="senha"
-              value={formData.senha}
+              id="password"
+              name="password"
+              value={formData.password}
               onChange={handleChange}
               placeholder="Digite sua senha"
               disabled={carregando}
-              className={erros.senha ? 'input-erro' : ''}
+              className={erros.password ? 'input-erro' : ''}
             />
-            {erros.senha && (
-              <span className="erro-texto">{erros.senha}</span>
+            {erros.password && (
+              <span className="erro-texto">{erros.password}</span>
             )}
           </div>
 
